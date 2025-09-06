@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Vatfix = void 0;
-const VatfixDescription_1 = require("./VatfixDescription");
 class Vatfix {
     constructor() {
         this.description = {
@@ -10,58 +9,101 @@ class Vatfix {
             icon: 'file:vatfix.svg',
             group: ['transform'],
             version: 1,
-            description: 'Real-time EU VAT Validation numbers with VATFix Plus',
+            description: 'EU VAT validation via VATFix Plus',
             defaults: {
                 name: 'VATFix Plus',
             },
-            import: { NodeConnectionType }, from, "n8n-workflow": ,
-            inputs: [NodeConnectionType.Main],
-            outputs: [NodeConnectionType.Main],
-            credentials: [{ name: 'vatfixApi', required: true }],
-            properties: VatfixDescription_1.vatfixNodeDescription,
+            inputs: ["main" /* NodeConnectionType.Main */],
+            outputs: ["main" /* NodeConnectionType.Main */],
+            credentials: [
+                {
+                    name: 'vatfixApi',
+                    required: true,
+                },
+            ],
+            properties: [
+                {
+                    displayName: 'Country Code',
+                    name: 'countryCode',
+                    type: 'string',
+                    default: '',
+                    placeholder: 'DE',
+                    required: true,
+                },
+                {
+                    displayName: 'VAT Number',
+                    name: 'vatNumber',
+                    type: 'string',
+                    default: '',
+                    placeholder: '123456789',
+                    required: true,
+                },
+                {
+                    displayName: 'Customer Email',
+                    name: 'customerEmail',
+                    type: 'string',
+                    default: '',
+                    placeholder: 'billing@example.com',
+                    required: true,
+                },
+                {
+                    displayName: 'Endpoint',
+                    name: 'endpoint',
+                    type: 'options',
+                    options: [
+                        { name: 'Lookup (recommended)', value: 'lookup' },
+                        { name: 'Validate (alias)', value: 'validate' }
+                    ],
+                    default: 'lookup',
+                }
+            ],
         };
     }
     async execute() {
+        var _a;
         const items = this.getInputData();
         const returnData = [];
-        const creds = await this.getCredentials('vatfixApi');
-        const apiKey = String(creds.apiKey || '');
-        const email = String(creds.customerEmail || '');
+        const creds = await this.getCredentials('vatfixApi'); // expects VatfixApi.credentials.ts -> name = 'vatfixApi'
+        const apiKey = String(creds.apiKey || '').trim();
+        const baseUrl = String(creds.baseUrl || 'https://plus.vatfix.eu').replace(/\/+$/, '');
         for (let i = 0; i < items.length; i++) {
-            const operation = this.getNodeParameter('operation', i);
-            if (operation === 'validate') {
-                const body = {
-                    countryCode: String(this.getNodeParameter('countryCode', i)),
-                    vatNumber: String(this.getNodeParameter('vatNumber', i)),
-                };
-                const res = await this.helpers.httpRequest({
-                    method: 'POST',
-                    url: 'https://plus.vatfix.eu/vat/lookup',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-api-key': apiKey,
-                        'x-customer-email': email,
-                    },
-                    body,
-                    json: true,
-                });
-                returnData.push({ json: res });
+            const countryCode = this.getNodeParameter('countryCode', i);
+            const vatNumber = this.getNodeParameter('vatNumber', i);
+            const customerEmail = this.getNodeParameter('customerEmail', i);
+            const endpoint = this.getNodeParameter('endpoint', i);
+            const url = `${baseUrl}/vat/${endpoint}`;
+            const options = {
+                method: 'POST',
+                url,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': apiKey,
+                    'x-customer-email': customerEmail,
+                },
+                body: {
+                    countryCode,
+                    vatNumber,
+                },
+                json: true,
+            };
+            try {
+                const resp = await this.helpers.httpRequest(options);
+                returnData.push({ json: { input: { countryCode, vatNumber }, result: resp } });
             }
-            if (operation === 'reset') {
-                const res = await this.helpers.httpRequest({
-                    method: 'POST',
-                    url: 'https://plus.vatfix.eu/reset',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-api-key': apiKey,
-                        'x-customer-email': email,
+            catch (err) {
+                const status = (err === null || err === void 0 ? void 0 : err.statusCode) || (err === null || err === void 0 ? void 0 : err.status) || 500;
+                const data = ((_a = err === null || err === void 0 ? void 0 : err.response) === null || _a === void 0 ? void 0 : _a.body) || (err === null || err === void 0 ? void 0 : err.message) || 'request_failed';
+                returnData.push({
+                    json: {
+                        input: { countryCode, vatNumber },
+                        error: true,
+                        status,
+                        data,
                     },
-                    json: true,
                 });
-                returnData.push({ json: res });
             }
         }
-        return [returnData];
+        return this.prepareOutputData(returnData);
     }
 }
 exports.Vatfix = Vatfix;
