@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-vatfix-plus",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "VATFix Plus — EU VAT validation for n8n",
   "author": "VATFix Plus <api@vatfix.eu>",
   "license": "MIT",
