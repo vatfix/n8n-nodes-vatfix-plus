@@ -18,8 +18,10 @@ export class Vatfix implements INodeType {
 		defaults: {
 			name: 'VATFix Plus',
 		},
-		inputs: ['main'],
-		outputs: ['main'],
+		import { NodeConnectionType } from "n8n-workflow";
+
+  inputs: [NodeConnectionType.Main],
+		  outputs: [NodeConnectionType.Main],
 		credentials: [{ name: 'vatfixApi', required: true }],
 		properties: vatfixNodeDescription,
 	};

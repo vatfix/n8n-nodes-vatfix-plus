@@ -2,3 +2,6 @@
 node_modules/
 dist/*.map
 npm-debug.log*
+
+# npm packs
+n8n-nodes-vatfix-plus-*.tgz
