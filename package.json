@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-vatfix-plus",
-  "version": "1.0.15",
+  "version": "1.0.17",
   "description": "VATFix Plus — EU VAT validation for n8n",
   "author": "VATFix Plus <api@vatfix.eu>",
   "license": "MIT",
@@ -39,14 +39,8 @@
     "typescript": "^5.9.2"
   },
   "n8n": {
-    "nodes": [
-      "dist/nodes/Vatfix/Vatfix.node.js"
-    ],
-    "credentials": [
-      "dist/credentials/VatfixApi.credentials.js"
-    ]
+    "nodes": ["dist/nodes/Vatfix/Vatfix.node.js"],
+    "credentials": ["dist/credentials/VatfixApi.credentials.js"]
   },
-  "dependencies": {
-    "n8n-nodes-vatfix-plus": "^1.0.14"
-  }
+  "dependencies": {}
 }

@@ -1,4 +1,4 @@
-import {
+import type {
 	IAuthenticateGeneric,
 	ICredentialTestRequest,
 	ICredentialType,
@@ -7,8 +7,12 @@ import {
 
 export class VatfixApi implements ICredentialType {
 	name = 'vatfixApi';
-	displayName = 'VATFix API';
-	documentationUrl = 'https://plus.vatfix.eu/docs';
+	displayName = 'VATFix Plus account';
+
+	// force-cast string to Icon type
+	icon: any = 'file:assets/vatfix.svg';
+
+	documentationUrl = 'https://plus.vatfix.eu/plus';
 
 	properties: INodeProperties[] = [
 		{
@@ -17,18 +21,15 @@ export class VatfixApi implements ICredentialType {
 			type: 'string',
 			typeOptions: { password: true },
 			default: '',
-		},
-		{
-			displayName: 'Base URL',
-			name: 'baseUrl',
-			type: 'string',
-			default: 'https://plus.vatfix.eu',
+			required: true,
 		},
 		{
 			displayName: 'Customer Email',
 			name: 'customerEmail',
 			type: 'string',
 			default: '',
+			placeholder: 'store@yourdomain.tld',
+			required: true,
 		},
 	];
 
@@ -44,7 +45,7 @@ export class VatfixApi implements ICredentialType {
 
 	test: ICredentialTestRequest = {
 		request: {
-			baseURL: '={{ $credentials.baseUrl }}',
+			baseURL: 'https://plus.vatfix.eu',
 			url: '/status.json',
 		},
 	};

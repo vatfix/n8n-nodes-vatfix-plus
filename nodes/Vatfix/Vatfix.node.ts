@@ -1,115 +1,102 @@
 import type {
-  IExecuteFunctions,
-  INodeExecutionData,
-  INodeType,
-  INodeTypeDescription,
+	IExecuteFunctions,
+	INodeExecutionData,
+	INodeType,
+	INodeTypeDescription,
 } from 'n8n-workflow';
 import { NodeConnectionType } from 'n8n-workflow';
 
 export class Vatfix implements INodeType {
-  description: INodeTypeDescription = {
-    displayName: 'VATFix Plus',
-    name: 'vatfix',
-    icon: 'file:assets/vatfix.svg',
-    group: ['transform'],
-    version: 1,
-    description: 'EU VAT validation via VATFix Plus',
-    defaults: {
-      name: 'VATFix Plus',
-    },
-    inputs: [NodeConnectionType.Main],
-    outputs: [NodeConnectionType.Main],
-    credentials: [
-      {
-        name: 'vatfixApi',
-        required: true,
-      },
-    ],
-    properties: [
-      {
-        displayName: 'Country Code',
-        name: 'countryCode',
-        type: 'string',
-        default: '',
-        placeholder: 'DE',
-        required: true,
-      },
-      {
-        displayName: 'VAT Number',
-        name: 'vatNumber',
-        type: 'string',
-        default: '',
-        placeholder: '123456789',
-        required: true,
-      },
-      {
-        displayName: 'Customer Email',
-        name: 'customerEmail',
-        type: 'string',
-        default: '',
-        placeholder: 'billing@example.com',
-        required: true,
-      },
-      {
-        displayName: 'Endpoint',
-        name: 'endpoint',
-        type: 'options',
-        options: [
-          { name: 'Lookup (recommended)', value: 'lookup' },
-          { name: 'Validate (alias)', value: 'validate' }
-        ],
-        default: 'lookup',
-      }
-    ],
-  };
+	description: INodeTypeDescription = {
+		displayName: 'VATFix Plus',
+		name: 'vatfix',
+		icon: 'file:assets/vatfix.svg',
+		documentationUrl: 'https://plus.vatfix.eu/plus',
+		group: ['transform'],
+		version: 1,
+		description: 'EU VAT validation via VATFix Plus',
+		defaults: { name: 'VATFix Plus' },
+		inputs: [NodeConnectionType.Main],
+		outputs: [NodeConnectionType.Main],
+		credentials: [{ name: 'vatfixApi', required: true }],
+		properties: [
+			{
+				displayName: 'Country Code',
+				name: 'countryCode',
+				type: 'string',
+				default: '',
+				placeholder: 'DE',
+				required: true,
+			},
+			{
+				displayName: 'VAT Number',
+				name: 'vatNumber',
+				type: 'string',
+				default: '',
+				placeholder: '123456789',
+				required: true,
+			},
+			{
+				displayName: 'Endpoint',
+				name: 'endpoint',
+				type: 'options',
+				options: [
+					{ name: 'Lookup (recommended)', value: 'lookup' },
+					{ name: 'Validate (alias)', value: 'validate' },
+				],
+				default: 'lookup',
+			},
+		],
+	};
 
-  async execute(this: IExecuteFunctions) {
-    const items = this.getInputData();
-    const returnData: INodeExecutionData[] = [];
+	async execute(this: IExecuteFunctions) {
+		const items = this.getInputData();
+		const out: INodeExecutionData[] = [];
 
-    const creds = await this.getCredentials('vatfixApi'); // expects VatfixApi.credentials.ts -> name = 'vatfixApi'
-    const apiKey = String((creds as any).apiKey || '').trim();
-    const baseUrl = String((creds as any).baseUrl || 'https://plus.vatfix.eu').replace(/\/+$/, '');
+		// single source of truth: credentials
+		const creds = (await this.getCredentials('vatfixApi')) as {
+			apiKey: string;
+			customerEmail: string;
+		};
 
-    for (let i = 0; i < items.length; i++) {
-      const countryCode = this.getNodeParameter('countryCode', i) as string;
-      const vatNumber = this.getNodeParameter('vatNumber', i) as string;
-      const customerEmail = this.getNodeParameter('customerEmail', i) as string;
-      const endpoint = this.getNodeParameter('endpoint', i) as string;
+		const apiKey = String(creds.apiKey || '').trim();
+		const customerEmail = String(creds.customerEmail || '').trim();
 
-      const url = `${baseUrl}/vat/${endpoint}`;
-      const options = {
-        method: 'POST',
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-          'x-customer-email': customerEmail,
-        } as Record<string, string>,
-        body: {
-          countryCode,
-          vatNumber,
-        },
-        json: true,
-      };
+		// opaque host
+		const baseUrl = 'https://plus.vatfix.eu';
 
-      try {
-        const resp = await this.helpers.httpRequest(options as any);
-        returnData.push({ json: { input: { countryCode, vatNumber }, result: resp } });
-      } catch (err: any) {
-        const status = err?.statusCode || err?.status || 500;
-        const data = err?.response?.body || err?.message || 'request_failed';
-        returnData.push({
-          json: {
-            input: { countryCode, vatNumber },
-            error: true,
-            status,
-            data,
-          },
-        });
-      }
-    }
+		for (let i = 0; i < items.length; i++) {
+			const countryCode = this.getNodeParameter('countryCode', i) as string;
+			const vatNumber = this.getNodeParameter('vatNumber', i) as string;
+			const endpoint = this.getNodeParameter('endpoint', i) as string;
 
-    return this.prepareOutputData(returnData);
-  }
+			const options = {
+				method: 'POST',
+				url: `${baseUrl}/vat/${endpoint}`,
+				headers: {
+					'Content-Type': 'application/json',
+					'x-api-key': apiKey,
+					'x-customer-email': customerEmail,
+				} as Record<string, string>,
+				body: { countryCode, vatNumber },
+				json: true,
+			};
+
+			try {
+				const resp = await this.helpers.httpRequest(options as any);
+				out.push({ json: { input: { countryCode, vatNumber }, result: resp } });
+			} catch (err: any) {
+				out.push({
+					json: {
+						input: { countryCode, vatNumber },
+						error: true,
+						status: err?.statusCode ?? err?.status ?? 500,
+						data: err?.response?.body ?? err?.message ?? 'request_failed',
+					},
+				});
+			}
+		}
+
+		return this.prepareOutputData(out);
+	}
 }

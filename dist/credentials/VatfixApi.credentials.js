@@ -4,8 +4,10 @@ exports.VatfixApi = void 0;
 class VatfixApi {
     constructor() {
         this.name = 'vatfixApi';
-        this.displayName = 'VATFix API';
-        this.documentationUrl = 'https://plus.vatfix.eu/docs';
+        this.displayName = 'VATFix Plus account';
+        // force-cast string to Icon type
+        this.icon = 'file:assets/vatfix.svg';
+        this.documentationUrl = 'https://plus.vatfix.eu/plus';
         this.properties = [
             {
                 displayName: 'API Key',
@@ -13,18 +15,15 @@ class VatfixApi {
                 type: 'string',
                 typeOptions: { password: true },
                 default: '',
-            },
-            {
-                displayName: 'Base URL',
-                name: 'baseUrl',
-                type: 'string',
-                default: 'https://plus.vatfix.eu',
+                required: true,
             },
             {
                 displayName: 'Customer Email',
                 name: 'customerEmail',
                 type: 'string',
                 default: '',
+                placeholder: 'store@yourdomain.tld',
+                required: true,
             },
         ];
         this.authenticate = {
@@ -38,7 +37,7 @@ class VatfixApi {
         };
         this.test = {
             request: {
-                baseURL: '={{ $credentials.baseUrl }}',
+                baseURL: 'https://plus.vatfix.eu',
                 url: '/status.json',
             },
         };
