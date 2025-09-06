@@ -4,13 +4,13 @@ import type {
 	INodeType,
 	INodeTypeDescription,
 } from 'n8n-workflow';
-import { NodeConnectionType } from 'n8n-workflow';
+import { NodeConnectionType, type Icon } from 'n8n-workflow';
 
 export class Vatfix implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'VATFix Plus',
 		name: 'vatfix',
-		icon: 'file:assets/vatfix.svg',
+		icon: { light: 'file:vatfix.svg', dark: 'file:vatfix.svg' } as Icon,
 		documentationUrl: 'https://plus.vatfix.eu/plus',
 		group: ['transform'],
 		version: 1,

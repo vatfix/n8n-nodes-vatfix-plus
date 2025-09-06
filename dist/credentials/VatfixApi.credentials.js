@@ -6,7 +6,7 @@ class VatfixApi {
         this.name = 'vatfixApi';
         this.displayName = 'VATFix Plus account';
         // force-cast string to Icon type
-        this.icon = 'file:assets/vatfix.svg';
+        this.icon = { light: 'file:vatfix.svg', dark: 'file:vatfix.svg' };
         this.documentationUrl = 'https://plus.vatfix.eu/plus';
         this.properties = [
             {

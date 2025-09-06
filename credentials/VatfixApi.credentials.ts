@@ -3,6 +3,7 @@ import type {
 	ICredentialTestRequest,
 	ICredentialType,
 	INodeProperties,
+	Icon,
 } from 'n8n-workflow';
 
 export class VatfixApi implements ICredentialType {
@@ -10,7 +11,7 @@ export class VatfixApi implements ICredentialType {
 	displayName = 'VATFix Plus account';
 
 	// force-cast string to Icon type
-	icon: any = 'file:assets/vatfix.svg';
+	icon: Icon = { light: 'file:vatfix.svg', dark: 'file:vatfix.svg' };
 
 	documentationUrl = 'https://plus.vatfix.eu/plus';
 
