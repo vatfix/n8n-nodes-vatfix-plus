@@ -6,7 +6,7 @@ class Vatfix {
         this.description = {
             displayName: 'VATFix Plus',
             name: 'vatfix',
-            icon: 'file:vatfix.svg',
+            icon: 'file:assets/vatfix.svg',
             group: ['transform'],
             version: 1,
             description: 'EU VAT validation via VATFix Plus',
