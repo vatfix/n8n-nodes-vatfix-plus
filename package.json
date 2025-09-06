@@ -45,5 +45,8 @@
     "credentials": [
       "dist/credentials/VatfixApi.credentials.js"
     ]
+  },
+  "dependencies": {
+    "n8n-nodes-vatfix-plus": "^1.0.14"
   }
 }
