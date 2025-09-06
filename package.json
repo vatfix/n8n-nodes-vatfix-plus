@@ -1,0 +1,49 @@
+{
+  "name": "n8n-nodes-vatfix-plus",
+  "version": "1.0.9",
+  "description": "VATFix Plus — EU VAT validation for n8n",
+  "author": "VATFix Plus <api@vatfix.eu>",
+  "license": "MIT",
+  "keywords": [
+    "n8n-community-node-package",
+    "n8n-nodes",
+    "vat",
+    "vies",
+    "eu",
+    "vatfix"
+  ],
+  "homepage": "https://plus.vatfix.eu",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vatfix/n8n-nodes-vatfix-plus.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vatfix/n8n-nodes-vatfix-plus/issues"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**",
+    "assets/**",
+    "credentials/**",
+    "nodes/**",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "n8n-core": "^1.14.1",
+    "n8n-workflow": "^1.82.0",
+    "typescript": "^5.9.2"
+  },
+  "n8n": {
+    "nodes": [
+      "dist/nodes/Vatfix/Vatfix.node.js"
+    ],
+    "credentials": [
+      "dist/credentials/VatfixApi.credentials.js"
+    ]
+  }
+}
