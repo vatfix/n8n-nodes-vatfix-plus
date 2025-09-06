@@ -16,7 +16,7 @@ Custom n8n community node for **VATFix Plus** — EU VAT validation with VIES fa
 ## 🔑 Prerequisites
 
 1. [Sign up at VATFix Plus](https://plus.vatfix.eu/buy)
-2. Copy your **API Key** and **Billing Email**.
+2. Copy your **API Key**.
 3. Install this node in your n8n instance.
 
 ---
@@ -26,7 +26,7 @@ Custom n8n community node for **VATFix Plus** — EU VAT validation with VIES fa
 From your n8n root:
 
 ```bash
-npm install n8n-nodes-vatfix-plus
+npm install n8n-nodes-vatfix-plus@1.0.19
 ```
 
 Restart n8n. Node appears as **VATFix Plus** inside the Editor.
