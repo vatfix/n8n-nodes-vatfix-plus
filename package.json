@@ -29,7 +29,7 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json && cp nodes/Vatfix/vatfix.svg dist/nodes/Vatfix/ && cp credentials/vatfix.svg dist/credentials/",
-    "prepublishOnly": "npm run build"
+    "prepack": "npm run build"
   },
   "devDependencies": {
     "n8n-core": "^1.14.1",
@@ -43,6 +43,5 @@
     "credentials": [
       "dist/credentials/VatfixApi.credentials.js"
     ]
-  },
-  "dependencies": {}
+  }
 }
