@@ -1,6 +1,6 @@
 # 📟 n8n-nodes-vatfix-plus
 
-Custom n8n community node for **VATFix Plus** — EU VAT validation with VIES fallback.
+Custom n8n community node for **VATFix Plus** — Real-time EU VAT validation with VIES fallback.
 
 ---
 
@@ -26,7 +26,7 @@ Custom n8n community node for **VATFix Plus** — EU VAT validation with VIES fa
 From your n8n root:
 
 ```bash
-npm install n8n-nodes-vatfix-plus@1.0.19
+npm install n8n-nodes-vatfix-plus
 ```
 
 Restart n8n. Node appears as **VATFix Plus** inside the Editor.
